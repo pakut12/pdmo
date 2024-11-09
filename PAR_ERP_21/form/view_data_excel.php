@@ -28,8 +28,8 @@
       $W = $_GET['W'];
       $WFR_ID = $_GET['WFR'];
 
-      /********** ดึงข้อมูลในตาราง  FRM_SLIP_EMPLOYEE************/
-      $query = db::query("select * from FRM_SLIP_EMPLOYEE WHERE WF_MAIN_ID = '" . $W . "' AND WFR_ID = '" . $WFR_ID . "'");
+      /********** ดึงข้อมูลในตาราง  FRM_SLIP_EMPLOYEE เเละ WFR_SLIP_EMPLOYEE************/
+      $query = db::query("SELECT * FROM WFR_SLIP_EMPLOYEE a INNER JOIN FRM_SLIP_EMPLOYEE b ON a.WFR_ID = b.WFR_ID  WHERE b.WF_MAIN_ID = '" . $W . "'  AND b.WFR_ID = '" . $WFR_ID . "'");
       $row = db::num_rows($query);
 
       $WF = [];
@@ -61,6 +61,7 @@
         <?= $WF[0]["F_YEAR"] ?><br>
         <div class="mt-1"><?= $WF[0]["F_TYPE"] ?></div>
       </div>
+      <input type="hidden" name="PER_TYPE[]" id="" value=" <?= $WF[0]["PER_TYPE"] ?>">
       <input type="hidden" name="MONTH_ID[]" id="" value=" <?= $WF[0]["MONTH_ID"] ?>">
       <input type="hidden" name="DEP_ID[]" id="" value="<?= $WF[0]["DEP_ID"] ?>">
       <input type="hidden" name="F_YEAR[]" id="" value="<?= $v['F_YEAR']; ?>">
@@ -110,7 +111,7 @@
             $sumF_SLF = 0; //ผลรวมของ กยศ.
             $sumF_PDMO = 0; //ผลรวมของ หนี้ สบน.
             $sumF_ACCEPT = 0; //ผลรวมของ รับจริง
-
+          
 
             foreach ($WF as $k => $v) {
               if ($de == $v['F_AFFILIATION']) {
@@ -135,7 +136,7 @@
                 $sum_FULL_F_PDMO += $v['F_PDMO'];
                 $sum_FULL_F_ACCEPT += $v['F_ACCEPT'];
                 /*************** จบเพิ่มจำนวนผลรวมทั้งหมดเเต่ล่ะช่อง ***************/
-          ?>
+                ?>
                 <tr>
 
                   <input type="hidden" name="F_ID[]" id="" value="<?= $v['F_ID']; ?>">
@@ -159,14 +160,24 @@
                   <td id="T_F_WAGE#<?= $v['F_ID']; ?>"><?= number_format($v['F_WAGE'], 2); ?></td>
                   <td id="T_F_SUM#<?= $v['F_ID']; ?>"><?= number_format($v['F_SUM'], 2); ?></td>
                   <td id="T_F_SSO#<?= $v['F_ID']; ?>"><?= number_format($v['F_SSO'], 2); ?></td>
-                  <td><input type="text" name="F_COOPERATIVE[]" id="F_COOPERATIVE#<?= $v['F_ID']; ?>" class="form-control form-control-sm text-center" value="<?php echo isset($v['F_COOPERATIVE']) ? number_format($v['F_COOPERATIVE'], 2) : "0.00" ?>"></td>
-                  <td><input type="text" name="F_BANK_DEBT[]" id="F_BANK_DEBT#<?= $v['F_ID']; ?>" class="form-control form-control-sm text-center" value="<?php echo isset($v['F_BANK_DEBT']) ? number_format($v['F_BANK_DEBT'], 2) :  "0.00"  ?>"></td>
-                  <td><input type="text" name="F_SLF[]" id="F_SLF#<?= $v['F_ID']; ?>" class="form-control form-control-sm text-center" value="<?php echo isset($v['F_SLF']) ? number_format($v['F_SLF'], 2) :  "0.00"  ?>"></td>
-                  <td><input type="text" name="F_PDMO[]" id="F_PDMO#<?= $v['F_ID']; ?>" class="form-control form-control-sm text-center" value="<?php echo isset($v['F_PDMO']) ? number_format($v['F_PDMO'], 2) :  "0.00"  ?>"></td>
-                  <td><input type="text" name="F_ACCEPT[]" id="F_ACCEPT#<?= $v['F_ID']; ?>" class="form-control form-control-sm text-center" value="<?= number_format($v['F_ACCEPT'], 2) ?>" readonly></td>
+                  <td><input type="text" name="F_COOPERATIVE[]" id="F_COOPERATIVE#<?= $v['F_ID']; ?>"
+                      class="form-control form-control-sm text-center"
+                      value="<?php echo isset($v['F_COOPERATIVE']) ? number_format($v['F_COOPERATIVE'], 2) : "0.00" ?>"></td>
+                  <td><input type="text" name="F_BANK_DEBT[]" id="F_BANK_DEBT#<?= $v['F_ID']; ?>"
+                      class="form-control form-control-sm text-center"
+                      value="<?php echo isset($v['F_BANK_DEBT']) ? number_format($v['F_BANK_DEBT'], 2) : "0.00" ?>"></td>
+                  <td><input type="text" name="F_SLF[]" id="F_SLF#<?= $v['F_ID']; ?>"
+                      class="form-control form-control-sm text-center"
+                      value="<?php echo isset($v['F_SLF']) ? number_format($v['F_SLF'], 2) : "0.00" ?>"></td>
+                  <td><input type="text" name="F_PDMO[]" id="F_PDMO#<?= $v['F_ID']; ?>"
+                      class="form-control form-control-sm text-center"
+                      value="<?php echo isset($v['F_PDMO']) ? number_format($v['F_PDMO'], 2) : "0.00" ?>"></td>
+                  <td><input type="text" name="F_ACCEPT[]" id="F_ACCEPT#<?= $v['F_ID']; ?>"
+                      class="form-control form-control-sm text-center" value="<?= number_format($v['F_ACCEPT'], 2) ?>"
+                      readonly></td>
                   <td><?= ($v['F__NOTE']); ?></td>
                 </tr>
-            <?php
+                <?php
               }
             }
             ?>
@@ -182,7 +193,7 @@
               <td id="S_F_ACCEP#<?= $key; ?>"> <?= number_format($sumF_ACCEPT, 2) ?></td>
               <td> </td>
             </tr>
-          <?php
+            <?php
           }
           ?>
 
@@ -217,7 +228,7 @@
   /*********** เเยกสังกัด ***************/
   function get_dep(rows) {
     var arr = [];
-    $(rows).each(function(k, v) {
+    $(rows).each(function (k, v) {
       if (v[5] !== undefined && !arr.includes(v[5]) && v[0] !== undefined && !v[0].includes("รวม")) {
         arr.push(v[5]);
       }
@@ -231,7 +242,7 @@
   function get_all_sum_by_dep(dep, data) {
     let all_data = [];
 
-    $(data).each(function(k, v) {
+    $(data).each(function (k, v) {
       if (v[0] !== undefined && !v[0].includes("รวม")) {
 
         all_data.push(v);
@@ -249,7 +260,7 @@
     let sum_FULL_F_PDMO = 0; //ผลรวมทั้งหมดของ หนี้ สบน.
     let sum_FULL_F_ACCEPT = 0; //ผลรวมทั้งหมดของ รับจริง
 
-    $(dep).each(function(k, d) {
+    $(dep).each(function (k, d) {
 
       let sumF_WAGE = 0; //ผลรวมของ อัตราค่าจ้างเดือนละ
       let sumF_SUM = 0; //ผลรวมของ รวมยอดจ่ายจริง
@@ -260,7 +271,7 @@
       let sumF_PDMO = 0; //ผลรวมของ หนี้ สบน.
       let sumF_ACCEPT = 0; //ผลรวมของ รับจริง
 
-      $(all_data).each(function(k, v) {
+      $(all_data).each(function (k, v) {
         if (d === v[5]) {
           sumF_WAGE += parseFloat(v[6].replace(/,/g, ''));
           sumF_SUM += parseFloat(v[7].replace(/,/g, ''));
@@ -276,36 +287,36 @@
 
       sum_dep.push(
         [sumF_WAGE.toLocaleString('en-US', {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
-          }),
-          sumF_SUM.toLocaleString('en-US', {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
-          }), sumF_SSO.toLocaleString('en-US', {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
-          }),
-          sumF_COOPERATIVE.toLocaleString('en-US', {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
-          }),
-          sumF_BANK_DEBT.toLocaleString('en-US', {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
-          }),
-          sumF_SLF.toLocaleString('en-US', {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
-          }),
-          sumF_PDMO.toLocaleString('en-US', {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
-          }),
-          sumF_ACCEPT.toLocaleString('en-US', {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
-          })
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+        }),
+        sumF_SUM.toLocaleString('en-US', {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+        }), sumF_SSO.toLocaleString('en-US', {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+        }),
+        sumF_COOPERATIVE.toLocaleString('en-US', {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+        }),
+        sumF_BANK_DEBT.toLocaleString('en-US', {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+        }),
+        sumF_SLF.toLocaleString('en-US', {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+        }),
+        sumF_PDMO.toLocaleString('en-US', {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+        }),
+        sumF_ACCEPT.toLocaleString('en-US', {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+        })
         ]
       );
 
@@ -321,9 +332,9 @@
   /*********** ดึงข้อมูลจากตารางทั้งหมด ***************/
   function get_all_data() {
     let rows = [];
-    $('table tr').each(function() {
+    $('table tr').each(function () {
       let cols = [];
-      $(this).find('td').each(function(k, v) {
+      $(this).find('td').each(function (k, v) {
         if (k >= 9 && k <= 13) {
           cols.push($(v).find('input').val());
         } else {
@@ -338,14 +349,14 @@
 
 
 
-  $(document).ready(function() {
+  $(document).ready(function () {
 
-    $('input').click(function(e) {
+    $('input').click(function (e) {
       $(this).select();
 
     });
 
-    $('input').change(function() {
+    $('input').change(function () {
 
       var id = $(this).attr('id');
       var w_id = id.split("#");
@@ -422,7 +433,7 @@
       let ALL_S_PDMO = 0;
       let ALL_S_ACCEP = 0;
 
-      $(all_sum_by_dep).each(function(k, v) {
+      $(all_sum_by_dep).each(function (k, v) {
         ALL_S_WAGE += parseFloat(v[0].replace(/,/g, ''));
         ALL_S_SUM += parseFloat(v[1].replace(/,/g, ''));
         ALL_S_SSO += parseFloat(v[2].replace(/,/g, ''));
