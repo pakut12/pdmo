@@ -1,6 +1,5 @@
 <?php
 
-
 if ($_POST["PER_TYPE"][0] == 2) {  ///พนักงานข้าราชการ
     foreach ($_POST["F_ID"] as $k => $v) {
         $fullname = explode(" ", $_POST["F_USER"][$k]);
@@ -65,4 +64,3 @@ if ($_POST["PER_TYPE"][0] == 2) {  ///พนักงานข้าราชก
 
 
 unset($insert_m);
-

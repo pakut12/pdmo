@@ -90,13 +90,15 @@
                         // Convert each sheet to JSON and log it
                         var XL_row_object = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[sheetName]);
                         var json_object = JSON.stringify(XL_row_object);
+
                         console.log("Sheet: " + sheetName);
                         //console.log(json_object); // Output JSON to console
                         var jsdecode = JSON.parse(json_object);
-                        //console.log(jsdecode);
-                        var datajson = [];
-                        var dataheader = [];
 
+
+
+                        /** จัดการส่วนหัวเรื่อง**/
+                        var dataheader = [];
                         $(Object.entries(jsdecode[0])).each(function(k, v) {
                             dataheader.push(v);
                         })
@@ -113,50 +115,58 @@
                         $("#view_dep").text(dataheader[0][1] + dataheader[3][1]);
                         $("#view_month").text(dataheader[0][0]);
                         $("#view_type").text(dataheader[4][1]);
+                        /** จบจัดการส่วนหัวเรื่อง**/
 
-                        console.log(dataheader);
 
+                        var datajson = [];
                         $(jsdecode).each(function(k, v) {
-                            if (Object.values(v).includes('END')) {
-                                return false;
-                            } else {
-                                if (k >= 4) {
-                                    const updatedRow = {};
+                            if (k >= 4) {
+                                const updatedRow = {};
 
-                                    for (const [key, value] of Object.entries(v)) {
-                                        if (key.includes("บัญชีการจ่ายเงินเดือนลูกจ้างชั่วคราวเงินนอกงบประมาณ")) {
-                                            updatedRow["__EMPTY_NO"] = value;
-                                        } else if (key == "__EMPTY") {
-                                            updatedRow["__EMPTY_0"] = value; // New key name
-
-                                        } else {
-                                            updatedRow[key] = value; // Keep other keys as they are
-
-                                        }
+                                for (const [key, value] of Object.entries(v)) {
+                                    if (key.includes("บัญชีการจ่ายเงินเดือนลูกจ้างชั่วคราวเงินนอกงบประมาณ")) {
+                                        updatedRow["__EMPTY_NO"] = value;
+                                    } else if (key == "__EMPTY") {
+                                        updatedRow["__EMPTY_0"] = value;
+                                    } else {
+                                        updatedRow[key] = value;
                                     }
+                                }
 
+                                if (updatedRow["__EMPTY_NO"] === undefined || updatedRow["__EMPTY_NO"] == 'END') {
+                                    return false;
+                                } else {
+                                    /// ถ้าไม่พบข้อมูลให้ใส่ขีด - /// 
                                     for (let i = 0; i <= 13; i++) {
                                         const key = `__EMPTY_${i}`;
                                         if (updatedRow[key] === undefined) {
                                             updatedRow[key] = '-';
                                         }
                                     }
+
                                     datajson.push(updatedRow);
-
-
                                 }
-                            }
 
+                            }
                         })
 
+
+                        console.log(datajson);
+
+                        // Get Type
+                        let type_name = $('#select2-PER_TYPE-container').text();
+
+
+                        // ทำ data พร้อมส่ง เเละ นับ count
                         var datatosend = [];
                         var count = 0;
                         $(datajson).each(function(k, v) {
+
                             if (!v.__EMPTY_NO.toString().includes('รวม')) {
                                 count++;
-
                                 datatosend.push(v);
                             }
+
                         })
 
                         $("#excel_data").val(JSON.stringify(datatosend));
@@ -234,7 +244,8 @@
                             ],
                             columnDefs: [{
                                 render: function(data, type, row) {
-                                    return data == "-" ? data : Number(data.toFixed(2)).toLocaleString('en-US', {
+                                    return data == "-" ? data : Number(data.toFixed(
+                                        2)).toLocaleString('en-US', {
                                         minimumFractionDigits: 2
                                     });
                                 },
@@ -242,7 +253,8 @@
                                 targets: [6, 7, 8, 9, 10, 11, 12, 13]
                             }],
                             rowCallback: function(row, data) {
-                                if (data.__EMPTY_NO && data.__EMPTY_NO.toString().includes('รวม')) {
+                                if (data.__EMPTY_NO && data.__EMPTY_NO.toString().includes(
+                                        'รวม')) {
                                     $(row).addClass("bg-dark-subtle");
 
                                 }
@@ -250,6 +262,7 @@
                         });
 
                     });
+
                 };
 
 
